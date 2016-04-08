@@ -1,3 +1,5 @@
+import com.sun.javafx.binding.StringFormatter;
+
 import java.io.*;
 import java.util.*;
 
@@ -9,11 +11,11 @@ public class AutoCommenter {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		String sourceName;
-		Scanner keyboard = new Scanner(System.in);
+        UI userInterface = new CLI();
 		try {
             sourceName = args[0];
         } catch(Exception e){ // Handles user not inputing a file
-            sourceName = getUserFileName(keyboard) ;
+            sourceName = userInterface.getUserFileName();
         }
 //		else
 //			sourceName = new Scanner(System.in).nextLine();
@@ -100,8 +102,7 @@ public class AutoCommenter {
                         System.out.println("type a blank line to quit");
                         String mainDescription = "";
                         while(!mainDescription.substring((mainDescription.length()-6>=0)?mainDescription.length()-6:0).equals("\t * \r\n")) {
-                            System.out.print(">>>");
-                            mainDescription += String.format("\t * %s\r\n",keyboard.nextLine());
+                            mainDescription += userInterface.promptInput(">>>");
                         }
 //                        mainDescription = mainDescription.substring(0,mainDescription.length()-5);
 
@@ -110,13 +111,12 @@ public class AutoCommenter {
                         String[] parameters = code[i].substring(indexOfOpenParen+1, indexOfCloseParen).split(",");
                         if(parameters.length >= 2){
                             for (String parameter : parameters) {
-                                System.out.printf("Please input the description for the parameter\n%s\n>>>", parameter.split(" ")[(parameter.split(" ").length > 2)?2:1]);
-                                addedComments[i] += String.format("\t *@param %s %s\r\n", parameter.split(" ")[(parameter.split(" ").length > 2)?2:1], keyboard.nextLine());//parameters[j].split("\\s")[parameters[j].split("\\s").length - 1]);
+                                addedComments[i] += commentify("@param" + parameter.split(" ")[(parameter.split(" ").length > 2)?2:1] + userInterface.promptInput(String.format("Please input the description for the parameter\n%s\n>>>", parameter.split(" ")[(parameter.split(" ").length > 2)?2:1])));//parameters[j].split("\\s")[parameters[j].split("\\s").length - 1]);
                             }
                         }
                         if(!currentLineWhiteSpaceSeparated[positionOfFunctionName - 1].equals("void"))
                             System.out.printf("Please input the description what the following function returns\n %s\n>>>", code[i]);
-                            addedComments[i] += String.format("\t *@return %s\r\n",keyboard.nextLine());
+                            addedComments[i] += commentify("@return "+userInterface.promptInput(String.format("Please input the description what the following function returns\n %s\n>>>", code[i])));
                         addedComments[i] += "\t */\r\n";
                     }
                 }
@@ -133,19 +133,6 @@ public class AutoCommenter {
 		}
 		newSourceCode.close();
 	}
-
-    private static String getUserFileName(Scanner keyboard) {
-        while(true) {
-            System.out.print("Please put in a file name");
-            String sourceName = keyboard.nextLine();
-            if (new File(sourceName+".java").exists())
-                return sourceName;
-            else if (new File(sourceName).exists())
-                return sourceName.substring(0, sourceName.length()-5);
-            else
-                System.out.println("Source code does not exists (do not type the .java");
-        }
-    }
 
     private static void makeBackup(String originalFileName) throws FileNotFoundException{
 		File backup = new File("Generic Backup File.txt");
