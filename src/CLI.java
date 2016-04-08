@@ -19,4 +19,7 @@ public class CLI extends UI{
                 System.out.println("Source code does not exists (do not type the .java");
         }
     }
+    public void display(String output){
+        System.out.println(output);
+    }
 }

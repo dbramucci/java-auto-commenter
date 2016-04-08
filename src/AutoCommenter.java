@@ -8,10 +8,11 @@ public class AutoCommenter {
 
     private static final String[] SET_SYNONYMS = new String[]{"set", "store"};
 	private static final String[] GET_SYNONYMS = new String[]{"get"};
+    private static UI userInterface;
 
 	public static void main(String[] args) throws FileNotFoundException {
 		String sourceName;
-        UI userInterface = new CLI();
+        userInterface = new CLI();
 		try {
             sourceName = args[0];
         } catch(Exception e){ // Handles user not inputing a file
@@ -98,8 +99,8 @@ public class AutoCommenter {
                         addedComments[i] += "\t */\r\n";
                     }
                     else{
-                        System.out.printf("Please describe %s\n", nameOfFunction);
-                        System.out.println("type a blank line to quit");
+                        userInterface.display(String.format("Please describe %s\n " +
+                                "type a blank line to quit", nameOfFunction));
                         String mainDescription = "";
                         while(!mainDescription.substring((mainDescription.length()-6>=0)?mainDescription.length()-6:0).equals("\t * \r\n")) {
                             mainDescription += userInterface.promptInput(">>>");
@@ -115,7 +116,7 @@ public class AutoCommenter {
                             }
                         }
                         if(!currentLineWhiteSpaceSeparated[positionOfFunctionName - 1].equals("void"))
-                            System.out.printf("Please input the description what the following function returns\n %s\n>>>", code[i]);
+                            userInterface.display(String.format("Please input the description what the following function returns\n %s\n>>>", code[i]));
                             addedComments[i] += commentify("@return "+userInterface.promptInput(String.format("Please input the description what the following function returns\n %s\n>>>", code[i])));
                         addedComments[i] += "\t */\r\n";
                     }
@@ -141,7 +142,7 @@ public class AutoCommenter {
 		else
 			for(int i = 1; new File(String.format("%s-backup(%d).java", originalFileName, i)).exists(); i++) // makes sure backup is a new file;
 				backup = new File(String.format("%s-backup(%d).java", originalFileName, i+1));
-		System.out.println(backup);
+		userInterface.display(backup.toString());
 		File original = new File(originalFileName+".java");
 		Scanner fileIn = new Scanner(original);
 		PrintWriter fileOut = new PrintWriter(backup);
