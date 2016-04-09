@@ -10,12 +10,15 @@ class AutoCommenter {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		String sourceName;
-        if (args.length > 0 && args[0].equals("CLI"))
+        if (args.length > 0 && args[0].equalsIgnoreCase("CLI"))
             userInterface = new CLI();
         else
             userInterface = new GUI();
 		try {
-            sourceName = args[1];
+            if(args[1].substring(args[1].length()-5).equals(".java"))
+                sourceName = args[1].substring(0,args[1].length()-5);
+            else
+                sourceName = args[1];
         } catch(Exception e){ // Handles user not inputing a file
             sourceName = userInterface.getUserFileName();
         }
@@ -39,7 +42,7 @@ class AutoCommenter {
 		int currentScopeDepth = 0;
 		int oldScopeDepth;
 		for(int i = 0; i < code.length; i++){
-            System.out.println(i);
+//            System.out.println(i);
 			oldScopeDepth = currentScopeDepth;
 			if (code[i].contains("{")){
 				currentScopeDepth++;
