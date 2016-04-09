@@ -1,7 +1,7 @@
 import java.io.File;
 import java.util.Scanner;
-public class CLI extends UI{
-    private Scanner keyboard = new Scanner(System.in);
+class CLI extends UI{
+    private final Scanner keyboard = new Scanner(System.in);
 
     public String promptInput(String prompt){
         System.out.println(prompt);

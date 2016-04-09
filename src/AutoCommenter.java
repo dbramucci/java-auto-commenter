@@ -1,10 +1,8 @@
-import com.sun.javafx.binding.StringFormatter;
-
 import java.io.*;
 import java.util.*;
 
 
-public class AutoCommenter {
+class AutoCommenter {
 
     private static final String[] SET_SYNONYMS = new String[]{"set", "store"};
 	private static final String[] GET_SYNONYMS = new String[]{"get"};
@@ -12,9 +10,12 @@ public class AutoCommenter {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		String sourceName;
-        userInterface = new CLI();
+        if (args.length > 0 && args[0].equals("CLI"))
+            userInterface = new CLI();
+        else
+            userInterface = new GUI();
 		try {
-            sourceName = args[0];
+            sourceName = args[1];
         } catch(Exception e){ // Handles user not inputing a file
             sourceName = userInterface.getUserFileName();
         }
@@ -38,6 +39,7 @@ public class AutoCommenter {
 		int currentScopeDepth = 0;
 		int oldScopeDepth;
 		for(int i = 0; i < code.length; i++){
+            System.out.println(i);
 			oldScopeDepth = currentScopeDepth;
 			if (code[i].contains("{")){
 				currentScopeDepth++;
@@ -49,7 +51,7 @@ public class AutoCommenter {
 
             /*---------Code for when a method is found---------*/
             if(oldScopeDepth == 1 && // When moving from class scope
-                    code[i].contains("(")  && // Open pearenthesis means this is a function
+                    code[i].contains("(")  && // Open parenthesis means this is a function
                     !code[i-1].contains("*/")){ // This means a new function is declared // or an inline array.
                 int indexOfOpenParen = code[i].indexOf("(");
                 int indexOfCloseParen = code[i].lastIndexOf(")");
@@ -99,25 +101,24 @@ public class AutoCommenter {
                         addedComments[i] += "\t */\r\n";
                     }
                     else{
-                        userInterface.display(String.format("Please describe %s\n " +
-                                "type a blank line to quit", nameOfFunction));
                         String mainDescription = "";
                         while(!mainDescription.substring((mainDescription.length()-6>=0)?mainDescription.length()-6:0).equals("\t * \r\n")) {
-                            mainDescription += userInterface.promptInput(">>>");
+                            mainDescription += commentify(userInterface.promptInput(String.format("Please describe %s\n " +
+                                    "type a blank line to quit", nameOfFunction)));
                         }
 //                        mainDescription = mainDescription.substring(0,mainDescription.length()-5);
 
                         addedComments[i] = String.format("\t/**%s\r\n",nameOfFunction);
                         addedComments[i] += mainDescription;
-                        String[] parameters = code[i].substring(indexOfOpenParen+1, indexOfCloseParen).split(",");
-                        if(parameters.length >= 2){
+                        String textBetweenTheParens = code[i].substring(indexOfOpenParen+1, indexOfCloseParen);
+                        String[] parameters = textBetweenTheParens.split(",");
+                        if(parameters[0].split("\\s").length >= 2){
                             for (String parameter : parameters) {
-                                addedComments[i] += commentify("@param" + parameter.split(" ")[(parameter.split(" ").length > 2)?2:1] + userInterface.promptInput(String.format("Please input the description for the parameter\n%s\n>>>", parameter.split(" ")[(parameter.split(" ").length > 2)?2:1])));//parameters[j].split("\\s")[parameters[j].split("\\s").length - 1]);
+                                addedComments[i] += commentify(String.format("@param %s %s",parameter.split(" ")[(parameter.split(" ").length > 2)?2:1],userInterface.promptInput(String.format("Please input the description for the parameter\n%s", parameter.split(" ")[(parameter.split(" ").length > 2)?2:1]))));//parameters[j].split("\\s")[parameters[j].split("\\s").length - 1]);
                             }
                         }
                         if(!currentLineWhiteSpaceSeparated[positionOfFunctionName - 1].equals("void"))
-                            userInterface.display(String.format("Please input the description what the following function returns\n %s\n>>>", code[i]));
-                            addedComments[i] += commentify("@return "+userInterface.promptInput(String.format("Please input the description what the following function returns\n %s\n>>>", code[i])));
+                            addedComments[i] += commentify("@return "+userInterface.promptInput(String.format("Please input the description what the following function returns\n %s", nameOfFunction)));
                         addedComments[i] += "\t */\r\n";
                     }
                 }
