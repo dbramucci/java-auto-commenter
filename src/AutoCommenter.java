@@ -65,6 +65,7 @@ class AutoCommenter {
 
 /*-------------------------------------Code for when a method is found------------------------------------------------*/
             if(oldScopeDepth == 1 && // When moving from class scope
+                    //currentScopeDepth == 2 &&
                     code[i].contains("(")  && // Open parenthesis means this is a function
                     code[i].contains("{")  && // prevents false positives from function calls
                     !code[i-1].contains("*/")){ // This means a new function is declared // or an inline array.
