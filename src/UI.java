@@ -1,5 +1,5 @@
-class UI {
-    public String promptInput(String prompt){return "";}
-    public String getUserFileName() { return "";}
-    public void display(String output){}
+interface UI {
+    String promptInput(String prompt);
+    String getUserFileName();
+    void display(String output);
 }

@@ -1,6 +1,6 @@
 import javax.swing.*;
 import java.io.File;
-class GUI extends UI{
+class GUI implements UI {
 
     public String promptInput(String prompt){
         return JOptionPane.showInputDialog(null, prompt);
