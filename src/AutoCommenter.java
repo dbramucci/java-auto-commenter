@@ -125,7 +125,7 @@ class AutoCommenter {
                     addedComments[i] += "\t */\r\n";
                 }
 /*-------------------------------------Comments for non-get/set methods-----------------------------------------------*/
-                else{ // Generates comments for non-get/set methods
+                else if(!nameOfFunction.equals("main")){ // Generates comments for non-get/set methods
                     String mainDescription = "";
                     while(!mainDescription.substring(mainDescription.length()-6>=0 ?mainDescription.length()-6:0).equals("\t * \r\n")) {
                         mainDescription += commentify(userInterface.promptInput(String.format("Please describe %s\n " +
